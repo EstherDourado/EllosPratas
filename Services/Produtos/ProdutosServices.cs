@@ -39,6 +39,13 @@ namespace EllosPratas.Services.Produtos
         {
             try
             {
+                // Verifica se já existe um produto com o mesmo código de barras
+                var existe = await _context.Produtos
+                    .AnyAsync(p => p.codigo_barras == produtosCriacaoDto.codigo_barras);
+
+                if (existe)
+                    throw new Exception("Já existe um produto com este código de barras.");
+
                 var nomeCaminhoImagem = GeraCaminhoArquivo(foto);
 
                 var produto = new ProdutosModel
@@ -73,7 +80,9 @@ namespace EllosPratas.Services.Produtos
         {
             try
             {
-                return await _context.Produtos.ToListAsync();
+                return await _context.Produtos
+                    .Where(p => p.ativo)
+                    .ToListAsync();
             }
             catch (Exception ex)
             {
@@ -81,7 +90,7 @@ namespace EllosPratas.Services.Produtos
             }
         }
 
-        public Task<ProdutosModel> GetProdutoId(int id)
+        public async Task<ProdutosModel> GetProdutoId(int id)
         {
             try
             { 
@@ -93,7 +102,16 @@ namespace EllosPratas.Services.Produtos
             }
         }
 
+        public async Task<bool> InativarProduto(int id)
+        {
+            var produto = await _context.Produtos.FindAsync(id);
+            if (produto == null)
+                return false;
 
-
+            produto.ativo = false;
+            _context.Produtos.Update(produto);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }
