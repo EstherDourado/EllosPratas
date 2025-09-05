@@ -1,0 +1,25 @@
+/* root.css */
+:root {
+    --color-bg: #0d1b2a;
+    --color-card: #3a3a3a;
+    --color-primary: #6c7bff;
+    --color-primary-hover: #5a6de0;
+    --color-white: #ffffff;
+    --color-input-bg: #d9d9d9;
+    --color-shadow: rgba(0,0,0,0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--color-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}

@@ -1,1 +1,36 @@
-﻿
+﻿@model IEnumerable<EllosPratas.Models.ProdutosModel>
+@{
+    ViewData["Title"] = "Catálogo de Produtos";
+    var imagemPadrao = Url.Content("~/imagens/produto_padrao.png");
+}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Catálogo de Produtos</h2>
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var produto in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <img src="@(string.IsNullOrEmpty(produto.imagem) ? imagemPadrao : Url.Content("~/imagens/" + produto.imagem))"
+                             class="card-img-top" alt="Imagem do Produto" style="height: 220px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">@produto.nome_produto</h5>
+                            <p class="card-text mb-1"><strong>Valor:</strong> R$ @produto.preco_venda.ToString("N2")</p>
+                            <p class="card-text mb-1"><strong>Descrição:</strong> @produto.descricao</p>
+                            @* <p class="card-text mb-1"><strong>Estoque:</strong> @produto.quantidade</p> *@
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    Nenhum produto cadastrado.
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -9,6 +9,24 @@ namespace EllosPratas.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+
+            migrationBuilder.CreateTable(
+                name: "Produtos",
+                columns: table => new
+                {
+                    id_produto = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    nome_produto = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    descricao = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    preco = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ativo = table.Column<bool>(type: "bit", nullable: false),
+                    data_cadastro = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Produtos", x => x.id_produto);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Caixa",
                 columns: table => new

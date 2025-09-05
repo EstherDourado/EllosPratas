@@ -1,0 +1,91 @@
+/* menu.css */
+body {
+    display: block;
+    justify-content: unset;
+    align-items: unset;
+}
+
+/* Menu lateral fixo */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background-color: var(--color-card);
+    color: var(--color-white);
+    overflow-y: auto;
+    padding-top: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+        .sidebar ul li {
+            padding: 15px;
+            border-bottom: 1px solid var(--color-card);
+            cursor: pointer;
+            position: relative;
+        }
+
+            .sidebar ul li:hover {
+                background-color: var(--color-card);
+            }
+
+            .sidebar ul li span {
+                float: right;
+            }
+
+        .sidebar ul ul {
+            display: none;
+            background-color: var(--color-card);
+        }
+
+        .sidebar ul li.active > ul {
+            display: block;
+        }
+
+        /* Aqui controla as subcategorias */
+        .sidebar ul ul li {
+            padding: 20px 0px 5px 30px;
+            border-bottom: none;
+        }
+
+/* Conteúdo ao lado do menu */
+.main-content {
+    margin-left: 260px; /* espaço do menu */
+    width: calc(100% - 260px);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Barra superior */
+.topbar {
+    background-color: var(--color-input-bg);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.search-box {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+    .search-box input {
+        flex: 1;
+        padding: 5px 10px;
+        border: none;
+        outline: none;
+        font-size: 16px;
+    }
+
+/* Hero de exemplo */
+.hero {
+    padding: 40px;
+    color: var(--color-white);
+}
