@@ -29,7 +29,7 @@ namespace EllosPratas.Controllers
         public async Task<IActionResult> Editar(int id_produto)
         {
             var produto = await _produtosInterface.GetProdutoId(id_produto);
-            return View(produto);
+            return View(produtos);
         }
 
         [HttpPost]
