@@ -4,6 +4,7 @@ using EllosPratas.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EllosPratas.Migrations
 {
     [DbContext(typeof(BancoContext))]
-    partial class BancoContextModelSnapshot : ModelSnapshot
+    [Migration("20250917185713_AlteracaoNomeCategoria")]
+    partial class AlteracaoNomeCategoria
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -296,9 +299,6 @@ namespace EllosPratas.Migrations
 
                     b.Property<decimal>("preco_venda")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("quantidade")
-                        .HasColumnType("int");
 
                     b.HasKey("id_produto");
 

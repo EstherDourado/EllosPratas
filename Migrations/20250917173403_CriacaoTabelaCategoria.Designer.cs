@@ -4,6 +4,7 @@ using EllosPratas.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EllosPratas.Migrations
 {
     [DbContext(typeof(BancoContext))]
-    partial class BancoContextModelSnapshot : ModelSnapshot
+    [Migration("20250917173403_CriacaoTabelaCategoria")]
+    partial class CriacaoTabelaCategoria
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,9 +61,6 @@ namespace EllosPratas.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id_categoria"));
-
-                    b.Property<bool>("ativo")
-                        .HasColumnType("bit");
 
                     b.Property<string>("nome_categoria")
                         .IsRequired()
@@ -275,6 +275,10 @@ namespace EllosPratas.Migrations
                     b.Property<bool>("ativo")
                         .HasColumnType("bit");
 
+                    b.Property<string>("categoria")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("codigo_barras")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -286,19 +290,12 @@ namespace EllosPratas.Migrations
                     b.Property<byte[]>("imagem")
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<string>("nome_categoria")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("nome_produto")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("preco_venda")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("quantidade")
-                        .HasColumnType("int");
 
                     b.HasKey("id_produto");
 

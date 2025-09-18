@@ -13,7 +13,8 @@ namespace EllosPratas.Services.Produtos
         //Retorna apenas um produto pelo Id
         Task<ProdutosModel> GetProdutoPorId(int id);
 
-        //Task<ProdutosModel> AtualizarProduto(int id, ProdutosCriacaoDto produtosAtualizaDto, IFormFile imagem);
+        Task<ProdutosModel> AtualizarProduto(ProdutosEdicaoDto produtosEdicaoDto, IFormFile imagem);
+        Task<bool> AlterarStatusProduto(int id);
     }
 
 }

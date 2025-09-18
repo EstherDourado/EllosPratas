@@ -9,39 +9,47 @@
     ViewData["Title"] = "Lista de Produtos";
 }
 
-@* Verificação e exibição das mensagens do TempData *@
-@if (TempData["MensagemSucesso"] != null)
-{
-    <div class="alert alert-success" role="alert">
-        @TempData["MensagemSucesso"]
-    </div>
-}
+@* Mensagens de feedback *@
+@if (TempData["MensagemSucesso"] != null) { /* ... */ }
+@if (TempData["MensagemErro"] != null) { /* ... */ }
 
-@if (TempData["MensagemErro"] != null)
-{
-    <div class="alert alert-danger" role="alert">
-        @TempData["MensagemErro"]
-    </div>
-} 
-
-
-<h1>Lista de Produtos</h1>
 <div class="container mt-5">
-    <h2 class="mb-4 text-center">Catálogo de Produtos</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Lista de Produtos</h1>
+        <a asp-action="Cadastrar" asp-controller="Produtos" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Adicionar Novo Produto
+        </a>
+    </div>
+
     <div class="row">
         @if (Model != null && Model.Any())
         {
             foreach (var produto in Model)
             {
                 <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm">'
+                    <div class="card h-100 shadow-sm">
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill @(produto.ativo ? "bg-success" : "bg-danger")" style="margin-top: 10px; margin-left: -20px !important;">
+                            @(produto.ativo ? "Ativo" : "Inativo")
+                        </span>
+                        
                         <img src="@(produto.imagem != null && produto.imagem.Length > 0 ? $"data:image/png;base64,{Convert.ToBase64String(produto.imagem)}" : imagemPadrao)"
                              class="card-img-top" alt="Imagem do Produto" style="height: 220px; object-fit: cover;">
+
                         <div class="card-body">
                             <h5 class="card-title">@produto.nome_produto</h5>
                             <p class="card-text mb-1"><strong>Valor:</strong> R$ @produto.preco_venda.ToString("N2")</p>
+                            <p class="card-text mb-1"><strong>Categoria:</strong> @produto.nome_categoria</p>
                             <p class="card-text mb-1"><strong>Descrição:</strong> @produto.descricao</p>
-                            @* <p class="card-text mb-1"><strong>Estoque:</strong> @produto.quantidade</p> *@
+                            <p class="card-text mb-1"><strong>Estoque:</strong> @produto.quantidade</p>
+                        </div>
+
+                        <div class="card-footer text-center">
+                            <div class="btn-group" role="group">
+                                <a asp-action="Editar" asp-route-id="@produto.id_produto" class="btn btn-sm btn-outline-primary">Editar</a>
+                                <button type="button" class="btn btn-sm @(produto.ativo ? "btn-outline-warning" : "btn-outline-info") btn-status" data-id="@produto.id_produto">
+                                    @(produto.ativo ? "Inativar" : "Ativar")
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -49,11 +57,44 @@
         }
         else
         {
-            <div class="col-12">
-                <div class="alert alert-info text-center">
-                    Nenhum produto cadastrado.
-                </div>
+            <div class="col-12 text-center">
+                <p>Nenhum produto cadastrado.</p>
+                <a asp-action="Cadastrar" asp-controller="Produtos" class="btn btn-success">Cadastrar Primeiro Produto</a>
             </div>
         }
     </div>
-</div> 
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.btn-status').on('click', function () {
+                var button = $(this);
+                var id = button.data('id');
+                var card = button.closest('.card');
+                var badge = card.find('.badge');
+
+                if (confirm('Tem certeza que deseja alterar o status deste produto?')) {
+                    $.post('/Produtos/AlterarStatus', { id: id })
+                        .done(function (response) {
+                            if (response.success) {
+                                if (response.status) { // Se o novo status é ATIVO
+                                    badge.removeClass('bg-danger').addClass('bg-success').text('Ativo');
+                                    button.removeClass('btn-outline-info').addClass('btn-outline-warning').text('Inativar');
+                                } else { // Se o novo status é INATIVO
+                                    badge.removeClass('bg-success').addClass('bg-danger').text('Inativo');
+                                    button.removeClass('btn-outline-warning').addClass('btn-outline-info').text('Ativar');
+                                }
+                            } else {
+                                alert('Erro: ' + response.message);
+                            }
+                        })
+                        .fail(function () {
+                            alert('Não foi possível se comunicar com o servidor.');
+                        });
+                }
+            });
+        });
+    </script>
+}

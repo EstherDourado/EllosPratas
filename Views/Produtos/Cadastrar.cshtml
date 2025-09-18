@@ -1,65 +1,163 @@
-﻿using EllosPratas.Dto;
-using EllosPratas.Models;
+﻿@using EllosPratas.Dto;
+@using EllosPratas.Models;
+@model EllosPratas.Dto.ProdutosEdicaoDto;
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+@{
+    // 1. Lógica para detectar o modo de edição
+    bool isEditMode = Model != null && Model.id_produto > 0;
+    ViewData["Title"] = isEditMode ? "Editar Produto" : "Cadastrar Produto";
+    var imagemPadrao = Url.Content("~/imagens/produto_padrao.png");
+}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+
 <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-7">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Cadastro de Produto</h4>
-                </div>
-                <div class="card-body">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">@ViewData["Title"]</h4>
+        </div>
+        <div class="card-body">
+            @if (!isEditMode)
+            {
+                <ul class="nav nav-tabs" id="tabsCadastro" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#produto" type="button">Produto</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#categoriaCadastra" type="button">Cadastrar Categoria</button>
+                    </li>
+                </ul>
+            }
+
+            <div class="tab-content mt-4">
+
+                <div class="tab-pane fade show active" id="produto" role="tabpanel" aria-labelledby="produto-tab">
                     <form asp-action="Cadastrar" asp-controller="Produtos" method="post" enctype="multipart/form-data">
-                        <div class="mb-3">
-                            <label for="nome_produto" class="form-label">Nome do Produto</label>
-                            <input type="text" class="form-control" id="nome_produto" name="nome_produto" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="descricao" class="form-label">Descrição</label>
-                            <textarea class="form-control" id="descricao" name="descricao" rows="2" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="preco_venda" class="form-label">Preço de Venda</label>
-                            <input type="number" step="0.01" class="form-control" id="preco_venda" name="preco_venda" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="categoria" class="form-label">Categoria</label>
-                            <input type="text" class="form-control" id="categoria" name="categoria" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="codigo_barras" class="form-label">Código de Barras</label>
-                            <input type="text" class="form-control" id="codigo_barras" name="codigo_barras">
-                        </div>
-                        <div class="mb-3">
-                            <label for="ativo" class="form-label">Ativo</label>
-                            <select class="form-select" id="ativo" name="ativo" required>
-                                <option value="true">Sim</option>
-                                <option value="false">Não</option>
-                            </select>
+                        @if (isEditMode)
+                        {
+                            <input type="hidden" asp-for="id_produto" />
+                        }
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label asp-for="nome_produto" class="form-label">Nome do Produto</label>
+                                    <input asp-for="nome_produto" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="descricao" class="form-label"></label>
+                                    <textarea asp-for="descricao" class="form-control" rows="2" required></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="preco_venda" class="form-label">Preço de Venda</label>
+                                        <input asp-for="preco_venda" class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="quantidade" class="form-label">Quantidade Estoque</label>
+                                        <input asp-for="quantidade" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label asp-for="nome_categoria" class="form-label">Categoria</label>
+                                    <select asp-for="nome_categoria" class="form-control" id="categoria" style="width:100%" required>
+                                    </select>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="codigo_barras" class="form-label"></label>
+                                        <input asp-for="codigo_barras" class="form-control">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="ativo" class="form-label"></label>
+                                        <select asp-for="ativo" class="form-select" required>
+                                            <option value="true">Sim</option>
+                                            <option value="false">Não</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center">
+                                    <label for="ImageFile">
+                                        @{
+                                            var imgSrc = imagemPadrao;
+                                            if (isEditMode && ViewBag.ImagemAtual != null)
+                                            {
+                                                imgSrc = $"data:image/png;base64,{Convert.ToBase64String(ViewBag.ImagemAtual)}";
+                                            }
+                                        }
+                                        <img id="imgPreview" src="@imgSrc" class="img-thumbnail" style="width:200px; height: 200px; object-fit: cover; cursor:pointer;" alt="Imagem do Produto" />
+                                    </label>
+                                </div>
+                                <div class="mb-3 mt-2">
+                                    <label for="imagem" class="form-label">Trocar Imagem</label>
+                                    <input type="file" class="form-control" name="imagem" id="ImageFile" accept="image/*">
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="text-center">
-                            <label for="ImageFile">
-                                <img id="img" style="width:150px; height: 200px"/>
-                            </label>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="ImageFile" class="form-label">Imagem do Produto</label>
-                            <input type="file" class="form-control" id="ImageFile" name="imagem">
-                            
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Cadastrar</button>
+                        <hr />
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a href="/Produtos/Index" class="btn btn-outline-secondary">Cancelar</a>
+                            <button type="submit" class="btn btn-primary">@(isEditMode ? "Salvar Alterações" : "Cadastrar Produto")</button>
                         </div>
                     </form>
                 </div>
+
+                <div class="tab-pane fade" id="categoriaCadastra" role="tabpanel" aria-labelledby="categoria-tab">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h4>Nova Categoria</h4>
+                            <form id="formCategoria" class="mt-3">
+                                <div class="mb-3">
+                                    <label for="nomeCategoria" class="form-label">Nome da Categoria</label>
+                                    <input type="text" class="form-control" id="nomeCategoria" name="nome_categoria" required>
+                                </div>
+                                <button type="submit" class="btn btn-success">Adicionar Nova Categoria</button>
+                            </form>
+                        </div>
+                        <div class="col-md-7">
+                            <h4>Categorias Existentes</h4>
+                            <div id="lista-categorias-container" class="list-group mt-3" style="max-height: 300px; overflow-y: auto;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="editCategoriaModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel">Editar Categoria</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form id="formEditCategoria">
+                                <div class="modal-body">
+                                    <input type="hidden" id="editCategoriaId" name="id_categoria">
+                                    <div class="mb-3">
+                                        <label for="editCategoriaNome" class="form-label">Nome da Categoria</label>
+                                        <input type="text" class="form-control" id="editCategoriaNome" name="nome_categoria" required>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>  
+        </div>
     </div>
 </div>
+
+@section Scripts {
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
 <script>
@@ -85,4 +183,153 @@ using EllosPratas.Models;
         }
     });
 
+
+    $(document).ready(function () {
+        const isEditMode = @isEditMode.ToString().ToLower();
+        const selectCategoria = $('#categoria');
+
+        if (isEditMode) {
+            const categoriaAtual = "@Model.nome_categoria";
+            if (categoriaAtual) {
+                // Cria a opção no Select2
+                var option = new Option(categoriaAtual, categoriaAtual, true, true);
+                    selectCategoria.append(option);
+                selectCategoria.trigger('change');
+            }
+        }
+
+        selectCategoria.select2({
+            placeholder: "Selecione ou digite para buscar",
+            allowClear: true, // Permite limpar a seleção
+            ajax: {
+                url: '/Categorias/Listar', // Endpoint que busca as categorias
+                dataType: 'json',
+                delay: 250, // Atraso para o usuário terminar de digitar
+                data: function (params) {
+                    return { q: params.term }; // Termo de busca
+                },
+                processResults: function (data) {
+                    return { results: data };
+                },
+                cache: true
+            }
+        });
+
+        $('#categoria').select2({
+            placeholder: "Selecione ou digite para buscar",
+            allowClear: true,
+            ajax: {
+                url: '/Categorias/Listar', // Rota no controller de Categorias
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { q: params.term }; // 'q' é o termo da busca
+                },
+                processResults: function (data) {
+                    return { results: data };
+                },
+                cache: true
+            }
+        });
+
+
+        // --- LÓGICA PARA CADASTRAR NOVA CATEGORIA VIA AJAX ---
+        const listaContainer = $('#lista-categorias-container');
+        const editModal = new bootstrap.Modal(document.getElementById('editCategoriaModal'));
+
+        // Função para carregar e renderizar a lista de categorias
+        function carregarListaCategorias() {
+            listaContainer.html('<p>Carregando...</p>'); // Mostra feedback de carregamento
+            $.get('/Categorias/ListarTodas')
+                .done(function (categorias) {
+                    listaContainer.empty(); // Limpa o container
+                    if (categorias.length === 0) {
+                        listaContainer.html('<p class="text-muted">Nenhuma categoria cadastrada.</p>');
+                        return;
+                    }
+                    categorias.forEach(function (cat) {
+                        const statusBadge = cat.ativo
+                            ? '<span class="badge bg-success">Ativo</span>'
+                            : '<span class="badge bg-secondary">Inativo</span>';
+
+                        const statusButtonText = cat.ativo ? 'Inativar' : 'Ativar';
+                        const statusButtonClass = cat.ativo ? 'btn-outline-warning' : 'btn-outline-info';
+
+                        const itemHtml = `
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    ${cat.nome_categoria} ${statusBadge}
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-sm btn-outline-primary btn-editar" data-id="${cat.id_categoria}" data-nome="${cat.nome_categoria}">Editar</button>
+                                    <button type="button" class="btn btn-sm ${statusButtonClass} btn-status" data-id="${cat.id_categoria}">${statusButtonText}</button>
+                                </div>
+                            </div>
+                        `;
+                        listaContainer.append(itemHtml);
+                    });
+                })
+                .fail(function () {
+                    listaContainer.html('<p class="text-danger">Erro ao carregar categorias.</p>');
+                });
+        }
+
+        // Carrega a lista quando a página é aberta
+        carregarListaCategorias();
+
+        // Evento para CADASTRAR nova categoria
+        $('#formCategoria').submit(function (e) {
+            e.preventDefault();
+            $.post('/Categorias/Cadastrar', $(this).serialize())
+                .done(function (novaCategoria) {
+                    alert('Categoria cadastrada com sucesso!');
+                    $('#formCategoria')[0].reset();
+                    carregarListaCategorias(); // Recarrega a lista
+                    // Opcional: Adiciona no Select2
+                    var option = new Option(novaCategoria.text, novaCategoria.id, true, true);
+                    $('#categoria').append(option).trigger('change');
+                })
+                .fail(function (xhr) { alert('Erro: ' + xhr.responseText); });
+        });
+
+        // Evento para ABRIR O MODAL DE EDIÇÃO
+        listaContainer.on('click', '.btn-editar', function () {
+            const id = $(this).data('id');
+            const nome = $(this).data('nome');
+            $('#editCategoriaId').val(id);
+            $('#editCategoriaNome').val(nome);
+            editModal.show();
+        });
+
+        // Evento para SALVAR A EDIÇÃO
+        $('#formEditCategoria').submit(function (e) {
+            e.preventDefault();
+            $.post('/Categorias/Editar', $(this).serialize())
+                .done(function () {
+                    alert('Categoria atualizada com sucesso!');
+                    editModal.hide();
+                    carregarListaCategorias(); // Recarrega a lista
+                    $('#categoria').empty().trigger('change'); // Limpa o select2 para forçar a recarga dos dados na próxima vez que for aberto
+                })
+                .fail(function () { alert('Erro ao atualizar categoria.'); });
+        });
+
+        // Evento para ALTERAR O STATUS (Ativar/Inativar)
+        listaContainer.on('click', '.btn-status', function () {
+            const id = $(this).data('id');
+            if (confirm('Tem certeza que deseja alterar o status desta categoria?')) {
+                $.post('/Categorias/AlterarStatus', { id: id })
+                    .done(function () {
+                        carregarListaCategorias(); // Recarrega a lista
+                        $('#categoria').empty().trigger('change');
+                    })
+                    .fail(function () { alert('Erro ao alterar status.'); });
+            }
+        });
+
+        // (A lógica de preview de imagem continua a mesma)
+     });
+    
+
 </script>
+}

@@ -21,6 +21,7 @@ namespace EllosPratas.Data
         public DbSet<ItensVendaModel> ItensVenda { get; set; }
         public DbSet<PagamentoModel> Pagamentos { get; set; }
         public DbSet<ClienteModel> Clientes { get; set; }
+        public DbSet<CategoriaModel> Categorias { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,6 +45,7 @@ namespace EllosPratas.Data
 
             modelBuilder.Entity<ClienteModel>().HasKey(c => c.id_cliente);
 
+            modelBuilder.Entity<CategoriaModel>().HasKey(c => c.id_categoria);
         }
 
     }
