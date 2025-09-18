@@ -12,6 +12,8 @@ namespace EllosPratas.Models
         public string descricao { get; set; } = string.Empty;
         public decimal preco_venda { get; set; }
         public bool ativo { get; set; }
-        public string imagem { get; set; } = string.Empty;
+
+        public byte[]? imagem { get; set; }
     }
 }
+

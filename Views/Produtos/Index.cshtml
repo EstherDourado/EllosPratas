@@ -1,1 +1,59 @@
-﻿
+﻿@using Microsoft.IdentityModel.Tokens
+@model IEnumerable<EllosPratas.Models.ProdutosModel>
+@{
+    ViewData["Title"] = "Catálogo de Produtos";
+    var imagemPadrao = Url.Content("~/imagens/produto_padrao.png");
+}
+
+@{
+    ViewData["Title"] = "Lista de Produtos";
+}
+
+@* Verificação e exibição das mensagens do TempData *@
+@if (TempData["MensagemSucesso"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["MensagemSucesso"]
+    </div>
+}
+
+@if (TempData["MensagemErro"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["MensagemErro"]
+    </div>
+} 
+
+
+<h1>Lista de Produtos</h1>
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Catálogo de Produtos</h2>
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var produto in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">'
+                        <img src="@(produto.imagem != null && produto.imagem.Length > 0 ? $"data:image/png;base64,{Convert.ToBase64String(produto.imagem)}" : imagemPadrao)"
+                             class="card-img-top" alt="Imagem do Produto" style="height: 220px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">@produto.nome_produto</h5>
+                            <p class="card-text mb-1"><strong>Valor:</strong> R$ @produto.preco_venda.ToString("N2")</p>
+                            <p class="card-text mb-1"><strong>Descrição:</strong> @produto.descricao</p>
+                            @* <p class="card-text mb-1"><strong>Estoque:</strong> @produto.quantidade</p> *@
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    Nenhum produto cadastrado.
+                </div>
+            </div>
+        }
+    </div>
+</div> 

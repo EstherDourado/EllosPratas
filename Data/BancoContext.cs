@@ -1,5 +1,4 @@
 ﻿using EllosPratas.Models;
-using EllosPratas.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace EllosPratas.Data
@@ -49,3 +48,4 @@ namespace EllosPratas.Data
 
     }
 }
+
