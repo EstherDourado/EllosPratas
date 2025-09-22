@@ -14,6 +14,9 @@ builder.Services.AddDbContext<BancoContext>(options =>
 //Configurando a injeção de dependência para o serviço de produtos
 builder.Services.AddScoped<IProdutosInterface, ProdutosServices>();
 
+//Configurando a injeção de dependência para o serviço de clientes
+builder.Services.AddScoped<IClientesInterface, ClienteService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
